@@ -24,8 +24,8 @@ Importing cannot be undone with the editor undo button yet, so save the level fi
 
 ## Building
 
-Push to GitHub and the Build workflow makes the .geode files for Windows, macOS, iOS and Android. Pushing a tag that starts with v also publishes a release.
+Push to GitHub and the Build workflow makes the .geode files for Windows, macOS and Android. iOS is attempted on every run but is allowed to fail, because the Geode bindings currently do not compile for iOS here. Pushing a tag that starts with v also publishes a release.
 
 ## Supported versions
 
-Geometry Dash 2.2081 with Geode 5.11.2.
+Geometry Dash 2.2081 with Geode 5.11.2 on Windows, macOS and Android. iOS is not supported yet.

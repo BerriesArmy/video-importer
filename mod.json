@@ -3,8 +3,7 @@
     "gd": {
         "win": "2.2081",
         "android": "2.2081",
-        "mac": "2.2081",
-        "ios": "2.2081"
+        "mac": "2.2081"
     },
     "version": "v0.1.0",
     "id": "berriesarmy.video_importer",
@@ -12,14 +11,20 @@
     "developer": "BerriesArmy",
     "description": "Turns GIFs, images and frame folders into animated pixel art in the level editor.",
     "repository": "https://github.com/BerriesArmy/video-importer",
-    "tags": ["editor", "utility"],
+    "tags": [
+        "editor",
+        "utility"
+    ],
     "settings": {
         "placement": {
             "type": "string",
             "name": "Placement",
             "description": "Background puts the video behind normal gameplay. Movie puts it in front, for levels built around the video.",
             "default": "Background",
-            "one-of": ["Background", "Movie"]
+            "one-of": [
+                "Background",
+                "Movie"
+            ]
         },
         "grid-width": {
             "type": "int",
@@ -28,7 +33,10 @@
             "default": 40,
             "min": 8,
             "max": 80,
-            "control": {"slider": true, "input": true}
+            "control": {
+                "slider": true,
+                "input": true
+            }
         },
         "fps": {
             "type": "int",
@@ -37,7 +45,10 @@
             "default": 12,
             "min": 1,
             "max": 30,
-            "control": {"slider": true, "input": true}
+            "control": {
+                "slider": true,
+                "input": true
+            }
         },
         "video-width": {
             "type": "int",
@@ -46,7 +57,10 @@
             "default": 480,
             "min": 100,
             "max": 1200,
-            "control": {"slider": true, "input": true}
+            "control": {
+                "slider": true,
+                "input": true
+            }
         },
         "center-x": {
             "type": "int",
@@ -55,7 +69,9 @@
             "default": 285,
             "min": -10000,
             "max": 100000,
-            "control": {"input": true}
+            "control": {
+                "input": true
+            }
         },
         "center-y": {
             "type": "int",
@@ -64,7 +80,9 @@
             "default": 165,
             "min": -1000,
             "max": 3000,
-            "control": {"input": true}
+            "control": {
+                "input": true
+            }
         },
         "color-levels": {
             "type": "int",
@@ -73,7 +91,10 @@
             "default": 16,
             "min": 2,
             "max": 64,
-            "control": {"slider": true, "input": true}
+            "control": {
+                "slider": true,
+                "input": true
+            }
         },
         "change-threshold": {
             "type": "int",
@@ -82,7 +103,10 @@
             "default": 12,
             "min": 0,
             "max": 255,
-            "control": {"slider": true, "input": true}
+            "control": {
+                "slider": true,
+                "input": true
+            }
         },
         "max-frames": {
             "type": "int",
@@ -91,7 +115,9 @@
             "default": 600,
             "min": 1,
             "max": 3000,
-            "control": {"input": true}
+            "control": {
+                "input": true
+            }
         },
         "first-channel": {
             "type": "int",
@@ -100,7 +126,9 @@
             "default": 101,
             "min": 1,
             "max": 900,
-            "control": {"input": true}
+            "control": {
+                "input": true
+            }
         },
         "first-group": {
             "type": "int",
@@ -109,7 +137,9 @@
             "default": 1000,
             "min": 1,
             "max": 8000,
-            "control": {"input": true}
+            "control": {
+                "input": true
+            }
         },
         "block-id": {
             "type": "int",
@@ -118,7 +148,9 @@
             "default": 211,
             "min": 1,
             "max": 9999,
-            "control": {"input": true}
+            "control": {
+                "input": true
+            }
         }
     }
 }
