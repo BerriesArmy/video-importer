@@ -133,7 +133,36 @@ void fitGrid(int sourceW, int sourceH, LoadSettings const& settings, int& gridW,
     }
 }
 
+LoadSettings stillSettings(LoadSettings const& settings) {
+    LoadSettings still = settings;
+    still.gridWidth = settings.stillWidth;
+    still.maxCells = settings.stillMaxCells;
+    still.colorLevels = 256;
+    return still;
+}
+
+Clip stillFrom(uint8_t const* rgba, int width, int height, LoadSettings const& settings) {
+    LoadSettings still = stillSettings(settings);
+    Clip clip;
+    clip.fps = settings.fps;
+    clip.still = true;
+    clip.seconds = settings.stillSeconds;
+    fitGrid(width, height, still, clip.width, clip.height);
+    clip.frames.push_back(toGrid(rgba, width, height, clip.width, clip.height, still.colorLevels));
+    return clip;
+}
+
 Clip fromImages(std::vector<std::filesystem::path> const& files, LoadSettings const& settings) {
+    if (files.size() == 1) {
+        Pixels pixels;
+        if (!decode(readFile(files[0]), pixels)) {
+            Clip clip;
+            clip.error = "Could not read " + utf8(files[0].filename());
+            return clip;
+        }
+        return stillFrom(pixels.rgba.data(), pixels.width, pixels.height, settings);
+    }
+
     Clip clip;
     clip.fps = settings.fps;
     size_t limit = std::min(files.size(), static_cast<size_t>(settings.maxFrames));
@@ -147,6 +176,7 @@ Clip fromImages(std::vector<std::filesystem::path> const& files, LoadSettings co
         clip.frames.push_back(toGrid(pixels.rgba.data(), pixels.width, pixels.height, clip.width, clip.height, settings.colorLevels));
     }
     if (clip.frames.empty()) clip.error = "No images found";
+    clip.seconds = static_cast<double>(clip.frames.size()) / std::max(1, settings.fps);
     return clip;
 }
 
@@ -164,6 +194,13 @@ Clip fromGif(std::vector<uint8_t> const& bytes, LoadSettings const& settings) {
         if (delays) stbi_image_free(delays);
         clip.error = "Could not read this GIF";
         return clip;
+    }
+
+    if (count == 1) {
+        Clip still = stillFrom(data, width, height, settings);
+        stbi_image_free(data);
+        if (delays) stbi_image_free(delays);
+        return still;
     }
 
     fitGrid(width, height, settings, clip.width, clip.height);
@@ -194,6 +231,7 @@ Clip fromGif(std::vector<uint8_t> const& bytes, LoadSettings const& settings) {
         clip.frames.push_back(cells);
     }
 
+    clip.seconds = static_cast<double>(clip.frames.size()) / std::max(1, settings.fps);
     stbi_image_free(data);
     if (delays) stbi_image_free(delays);
     return clip;

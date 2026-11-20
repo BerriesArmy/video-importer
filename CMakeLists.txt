@@ -7,7 +7,7 @@ if (NOT GEODE_TARGET_PLATFORM STREQUAL "iOS")
 endif()
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
-project(VideoImporter VERSION 0.1.0)
+project(VideoImporter VERSION 0.1.1)
 
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)
 

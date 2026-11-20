@@ -124,8 +124,13 @@ void ImportPopup::startJob(std::filesystem::path source) {
                 job->state = 2;
                 return;
             }
-            Plan plan = makePlan(clip, config.threshold);
+            Plan plan = makePlan(clip, config.threshold, config.paletteSize);
             job->built = buildLevel(plan, config.layout);
+            if (job->built.info.frameCount == 0) {
+                job->error = "Too many objects for the limit, lower the grid width";
+                job->state = 2;
+                return;
+            }
             job->state = 1;
         } catch (std::exception const& e) {
             job->error = e.what();
@@ -161,6 +166,12 @@ void ImportPopup::update(float) {
 
     BuildInfo info = m_job->built.info;
     m_job.reset();
+    if (info.truncated) {
+        Notification::create(
+            fmt::format("Cut to {:.1f} seconds to stay under the object limit", info.seconds),
+            NotificationIcon::Warning
+        )->show();
+    }
     ExtrasPopup::create(info)->show();
     this->onClose(nullptr);
 }

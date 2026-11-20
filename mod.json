@@ -5,7 +5,7 @@
         "android": "2.2081",
         "mac": "2.2081"
     },
-    "version": "v0.1.0",
+    "version": "v0.1.1",
     "id": "berriesarmy.video_importer",
     "name": "Video Importer",
     "developer": "BerriesArmy",
@@ -53,8 +53,8 @@
         "video-width": {
             "type": "int",
             "name": "Video width",
-            "description": "Width of the video in level units. A block is 30 units wide.",
-            "default": 480,
+            "description": "Width of the video in level units. A block is 30 units wide. The screen is about 570 units wide and 320 tall, and the ground takes up the bottom part.",
+            "default": 360,
             "min": 100,
             "max": 1200,
             "control": {
@@ -148,6 +148,40 @@
             "default": 211,
             "min": 1,
             "max": 9999,
+            "control": {
+                "input": true
+            }
+        },
+        "still-grid-width": {
+            "type": "int",
+            "name": "Image grid width",
+            "description": "Blocks across for a single picture. Pictures share colors between blocks, so they can be much sharper than a video.",
+            "default": 120,
+            "min": 20,
+            "max": 200,
+            "control": {
+                "slider": true,
+                "input": true
+            }
+        },
+        "still-seconds": {
+            "type": "int",
+            "name": "Image length",
+            "description": "How many seconds a single picture stays up, which is also when End level fires.",
+            "default": 5,
+            "min": 1,
+            "max": 300,
+            "control": {
+                "input": true
+            }
+        },
+        "object-limit": {
+            "type": "int",
+            "name": "Object limit",
+            "description": "The editor object limit. Longer clips are cut so the import stays under it.",
+            "default": 40000,
+            "min": 1000,
+            "max": 100000,
             "control": {
                 "input": true
             }

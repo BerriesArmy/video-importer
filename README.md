@@ -16,11 +16,19 @@ The video is a grid of square blocks, each on its own color channel. Frame zero 
 
 The color channel range and group range are set in the settings, so you can keep them away from ranges your level already uses.
 
-## Not tested in game yet
+## Pictures and length
 
-The first version was written without being able to run the game. Camera lock and hiding the player use trigger properties that still need checking in game. If the video scrolls away or the player stays visible, please open an issue with the game version.
+A single picture is drawn with a palette of up to 256 colors shared between blocks, so it can be a lot sharper than a video, which needs one color channel per block. A picture stays up for the number of seconds set in the settings, and the window after import shows how long the video or picture lasts.
 
-Importing cannot be undone with the editor undo button yet, so save the level first.
+The editor object limit is a setting, 40000 by default. Clips that would go over are cut short and you get a warning.
+
+## Extras
+
+Hide player, hide ground, disable controls, loop and end level are all optional. Black background also hides the ground. End level and loop switch each other off. The end trigger sits at the point where a 1x speed level reaches the end of the video, and also fires from the spawn chain.
+
+## Not fully tested in game yet
+
+Keeping the video on screen uses a Move trigger locked to the camera, so Center X, Center Y and Video width in the settings may need adjusting for your screen. Importing cannot be undone with the editor undo button yet, so save the level first.
 
 ## Building
 

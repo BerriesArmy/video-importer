@@ -9,12 +9,16 @@ class $modify(VideoPauseLayer, EditorPauseLayer) {
     bool init(LevelEditorLayer* editor) {
         if (!EditorPauseLayer::init(editor)) return false;
 
+        auto sprite = ButtonSprite::create("Video");
+        sprite->setScale(.8f);
         auto button = CCMenuItemSpriteExtra::create(
-            ButtonSprite::create("Video"), this, menu_selector(VideoPauseLayer::onVideo)
+            sprite, this, menu_selector(VideoPauseLayer::onVideo)
         );
         auto menu = CCMenu::create();
         menu->addChild(button);
-        menu->setPosition({55.f, 28.f});
+
+        auto size = CCDirector::get()->getWinSize();
+        menu->setPosition({size.width * .74f, size.height * .62f});
         this->addChild(menu, 10);
         return true;
     }

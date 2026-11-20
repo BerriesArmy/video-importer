@@ -7,14 +7,16 @@
 namespace {
 
 constexpr size_t chunkSize = 1500;
+constexpr size_t extrasReserve = 12;
 constexpr float blockUnits = 30.f;
+constexpr float unitsPerSecond = 311.58f;
 constexpr int backgroundLayer = -5;
 constexpr int movieLayer = 3;
 constexpr int colorTriggerId = 899;
 constexpr int moveTriggerId = 901;
 constexpr int spawnTriggerId = 1268;
 constexpr int endTriggerId = 3600;
-constexpr int hidePlayerId = 1612;
+constexpr int optionsTriggerId = 2899;
 constexpr int disableTrailId = 33;
 constexpr int backgroundChannel = 1000;
 constexpr float triggerSpacing = 3.f;
@@ -82,10 +84,25 @@ BuiltLevel buildLevel(Plan const& plan, Layout const& layout) {
     info.videoGroup = layout.firstGroup;
     info.startGroup = layout.firstGroup + 1;
     info.endGroup = layout.firstGroup + 2;
-    info.frameCount = static_cast<int>(plan.frames.size());
+    info.totalFrames = static_cast<int>(plan.frames.size());
+    info.still = plan.still;
 
     double frameTime = 1.0 / std::max(1, plan.fps);
-    info.seconds = info.frameCount * frameTime;
+    size_t cells = static_cast<size_t>(plan.gridWidth) * plan.gridHeight;
+
+    size_t fixed = cells + 1 + extrasReserve;
+    size_t budget = layout.objectLimit > fixed ? layout.objectLimit - fixed : 0;
+    size_t used = 0;
+    int keep = 0;
+    for (auto const& changes : plan.frames) {
+        size_t cost = changes.empty() ? 0 : changes.size() + 1;
+        if (used + cost > budget) break;
+        used += cost;
+        ++keep;
+    }
+    info.frameCount = keep;
+    info.truncated = keep < info.totalFrames;
+    info.seconds = info.truncated ? keep * frameTime : plan.seconds;
 
     float cell = layout.videoWidth / plan.gridWidth;
     float scale = cell / blockUnits;
@@ -103,7 +120,8 @@ BuiltLevel buildLevel(Plan const& plan, Layout const& layout) {
             int cellIndex = row * plan.gridWidth + col;
             float x = layout.centerX + (col - (plan.gridWidth - 1) / 2.f) * cell;
             float y = layout.centerY + ((plan.gridHeight - 1) / 2.f - row) * cell;
-            list.add(pixel(layout.blockId, x, y, layout.firstChannel + cellIndex, layer, scale, info.videoGroup));
+            int channel = layout.firstChannel + plan.cellChannel[cellIndex];
+            list.add(pixel(layout.blockId, x, y, channel, layer, scale, info.videoGroup));
         }
     }
 
@@ -117,7 +135,7 @@ BuiltLevel buildLevel(Plan const& plan, Layout const& layout) {
         if (changes.empty()) continue;
         int group = frameGroupBase + k;
         for (auto const& change : changes) {
-            list.add(colorChange(nextX(), nextY(), layout.firstChannel + change.cell, change.color, group));
+            list.add(colorChange(nextX(), nextY(), layout.firstChannel + change.channel, change.color, group));
             ++placed;
         }
         list.add(spawnAfter(nextX(), nextY(), group, k * frameTime, info.startGroup));
@@ -127,8 +145,8 @@ BuiltLevel buildLevel(Plan const& plan, Layout const& layout) {
     list.add(spawnOnReach(0.f, 15.f, info.startGroup));
     list.flush();
 
+    info.objectCount = list.total;
     built.chunks = std::move(list.chunks);
-    built.objectCount = list.total;
     return built;
 }
 
@@ -144,9 +162,22 @@ std::string buildExtras(Extras const& extras, BuildInfo const& info) {
     };
 
     bool loop = extras.loop && !extras.endLevel;
+    bool hideGround = extras.hideGround || extras.blackBackground;
+
+    std::string options;
+    if (extras.hidePlayer) options += ",162,1,163,1";
+    if (hideGround) options += ",161,1,195,1";
+    if (extras.disableControls) options += ",165,1,199,1";
+    if (!options.empty()) {
+        put([&](float x, float y) {
+            return fmt::format(
+                "1,{},2,{:.1f},3,{:.1f}{},62,1,87,1,57,{}",
+                optionsTriggerId, x, y, options, info.startGroup
+            );
+        });
+    }
 
     if (extras.hidePlayer) {
-        put([&](float x, float y) { return spawned(hidePlayerId, x, y, info.startGroup); });
         put([&](float x, float y) { return spawned(disableTrailId, x, y, info.startGroup); });
     }
 
@@ -163,7 +194,11 @@ std::string buildExtras(Extras const& extras, BuildInfo const& info) {
     }
 
     if (extras.endLevel) {
-        put([&](float x, float y) { return spawned(endTriggerId, x, y, info.endGroup); });
+        float endX = std::max(60.f, static_cast<float>(info.seconds) * unitsPerSecond);
+        out += fmt::format(
+            "1,{},2,{:.1f},3,{:.1f},62,1,57,{};",
+            endTriggerId, endX, info.anchorY, info.endGroup
+        );
         put([&](float x, float y) { return spawnAfter(x, y, info.endGroup, info.seconds, info.startGroup); });
     }
 
