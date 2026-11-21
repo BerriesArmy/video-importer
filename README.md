@@ -32,7 +32,7 @@ Keeping the video on screen uses a Move trigger locked to the camera, so Center 
 
 ## Building
 
-Push to GitHub and the Build workflow makes the .geode files for Windows, macOS and Android. iOS is attempted on every run but is allowed to fail, because the Geode bindings currently do not compile for iOS here. Pushing a tag that starts with v also publishes a release.
+Push to GitHub and the Build workflow makes the .geode files for Windows, macOS and Android. iOS is left out of the workflow for now, because the Geode bindings do not compile for iOS yet. Pushing a tag that starts with v also publishes a release.
 
 ## Supported versions
 

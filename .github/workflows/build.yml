@@ -15,12 +15,9 @@ jobs:
       matrix:
         config:
           - name: Windows
-            os: windows-latest
+            os: windows-2025
           - name: macOS
             os: macos-latest
-          - name: iOS
-            os: macos-latest
-            target: iOS
           - name: Android32
             os: ubuntu-latest
             target: Android32
@@ -30,7 +27,6 @@ jobs:
 
     name: ${{ matrix.config.name }}
     runs-on: ${{ matrix.config.os }}
-    continue-on-error: ${{ matrix.config.name == 'iOS' }}
 
     steps:
       - uses: actions/checkout@v4
